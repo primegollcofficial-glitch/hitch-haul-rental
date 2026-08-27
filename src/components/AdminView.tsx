@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { TrailerItem, Booking } from '../types';
 import * as api from '../api';
+import { useData } from '../DataContext';
 
 type AdminTab = 'fleet' | 'bookings' | 'settings';
 
@@ -238,6 +239,7 @@ const emptyItem = (): TrailerItem => ({
 });
 
 function FleetManager({ refreshKey, onChanged }: { refreshKey: number; onChanged: () => void }) {
+  const { refresh } = useData();
   const [items, setItems] = useState<TrailerItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<TrailerItem | null>(null);
@@ -260,7 +262,7 @@ function FleetManager({ refreshKey, onChanged }: { refreshKey: number; onChanged
     if (!confirm(`Delete "${t.name}"? This cannot be undone.`)) return;
     try {
       await api.deleteFleet(t.id);
-      onChanged();
+      handleChanged();
     } catch (e) {
       alert((e as Error).message);
     }
@@ -270,9 +272,15 @@ function FleetManager({ refreshKey, onChanged }: { refreshKey: number; onChanged
     try {
       await api.updateFleet(t.id, { bookingEnabled: !(t.bookingEnabled !== false) });
       onChanged();
+      refresh();
     } catch (e) {
       alert((e as Error).message);
     }
+  };
+
+  const handleChanged = () => {
+    onChanged();
+    refresh();
   };
 
   return (
@@ -282,7 +290,7 @@ function FleetManager({ refreshKey, onChanged }: { refreshKey: number; onChanged
           <Truck className="w-5 h-5 text-[#ff6b00]" /> Fleet Products
         </h2>
         <div className="flex gap-2">
-          <button onClick={() => { if (confirm('Reset fleet to the default seed list? This will replace all products.')) api.resetFleet().then(() => { onChanged(); setEditing(null); }); }} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-white/15 text-xs font-bold text-white hover:bg-white/10 cursor-pointer">
+          <button onClick={() => { if (confirm('Reset fleet to the default seed list? This will replace all products.')) api.resetFleet().then(() => { handleChanged(); setEditing(null); }); }} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-white/15 text-xs font-bold text-white hover:bg-white/10 cursor-pointer">
             <RefreshCw className="w-3.5 h-3.5" /> Reset Defaults
           </button>
           <button onClick={() => setEditing(emptyItem())} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#ff6b00] text-black text-xs font-bold uppercase cursor-pointer">
@@ -296,7 +304,7 @@ function FleetManager({ refreshKey, onChanged }: { refreshKey: number; onChanged
           item={editing}
           isNew={!items.some((i) => i.id === editing.id)}
           onClose={() => setEditing(null)}
-          onSaved={() => { setEditing(null); onChanged(); }}
+          onSaved={() => { setEditing(null); handleChanged(); }}
         />
       )}
 

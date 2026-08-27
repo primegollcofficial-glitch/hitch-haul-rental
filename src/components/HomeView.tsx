@@ -147,31 +147,35 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectTrailer 
             <div className="relative h-44 sm:h-56 w-full bg-black/60 overflow-hidden">
               <img
                 src={(FLEET_ITEMS.find((t) => t.id === 'dump-14')?.imageUrl) || FLEET_ITEMS[0].imageUrl}
-                alt="14' Hydraulic Dump"
+                alt={FLEET_ITEMS.find((t) => t.id === 'dump-14')?.name || 'Trailer'}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 filter brightness-95"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute top-3 left-3 px-3 py-1 bg-[#ff6b00] text-black text-xs font-display uppercase tracking-wider font-bold">
-                DUMP
+                {FLEET_ITEMS.find((t) => t.id === 'dump-14')?.tag || 'DUMP'}
               </div>
             </div>
             <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
               <div>
                 <h3 className="font-display text-2xl sm:text-3xl text-white uppercase tracking-wide group-hover:text-[#ff6b00] transition-colors">
-                  14' HYDRAULIC DUMP
+                  {FLEET_ITEMS.find((t) => t.id === 'dump-14')?.name || "14' HYDRAULIC DUMP"}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#bab8b7] leading-relaxed mt-2">
-                  Heavy-duty 14,000 GVWR dump trailer. Perfect for construction debris, roofing materials, and aggregate.
+                  {FLEET_ITEMS.find((t) => t.id === 'dump-14')?.description || 'Heavy-duty dump trailer.'}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
                 <div>
                   <span className="text-[#8e8d8c] block text-[10px] uppercase font-bold tracking-wider">DAILY RATE</span>
-                  <span className="font-display text-lg sm:text-xl text-[#ff6b00] font-bold">$125</span>
+                  <span className="font-display text-lg sm:text-xl text-[#ff6b00] font-bold">
+                    ${(FLEET_ITEMS.find((t) => t.id === 'dump-14')?.rates.oneDay ?? FLEET_ITEMS.find((t) => t.id === 'dump-14')?.dailyRate) ?? 125}
+                  </span>
                 </div>
                 <div>
                   <span className="text-[#8e8d8c] block text-[10px] uppercase font-bold tracking-wider">CAPACITY</span>
-                  <span className="font-display text-lg sm:text-xl text-white font-bold">10,000 lbs</span>
+                  <span className="font-display text-lg sm:text-xl text-white font-bold">
+                    {FLEET_ITEMS.find((t) => t.id === 'dump-14')?.specs.capacity || '10,000 lbs'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -185,31 +189,35 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectTrailer 
             <div className="relative h-44 sm:h-56 w-full bg-black/60 overflow-hidden">
               <img
                 src={(FLEET_ITEMS.find((t) => t.id === 'tilt-20')?.imageUrl) || (FLEET_ITEMS[1]?.imageUrl || '')}
-                alt="20' Tilt Deck"
+                alt={FLEET_ITEMS.find((t) => t.id === 'tilt-20')?.name || "20' Tilt Deck"}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 filter brightness-95"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute top-3 left-3 px-3 py-1 bg-[#ff6b00] text-black text-xs font-display uppercase tracking-wider font-bold">
-                FLATBED
+                {FLEET_ITEMS.find((t) => t.id === 'tilt-20')?.tag || 'FLATBED'}
               </div>
             </div>
             <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
               <div>
                 <h3 className="font-display text-2xl sm:text-3xl text-white uppercase tracking-wide group-hover:text-[#ff6b00] transition-colors">
-                  20' TILT DECK
+                  {FLEET_ITEMS.find((t) => t.id === 'tilt-20')?.name || "20' TILT DECK"}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#bab8b7] leading-relaxed mt-2">
-                  Full power tilt for easy loading of scissor lifts, skid steers, and low-clearance equipment.
+                  {FLEET_ITEMS.find((t) => t.id === 'tilt-20')?.description || 'Full power tilt deck trailer.'}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
                 <div>
                   <span className="text-[#8e8d8c] block text-[10px] uppercase font-bold tracking-wider">DAILY RATE</span>
-                  <span className="font-display text-lg sm:text-xl text-[#ff6b00] font-bold">$110</span>
+                  <span className="font-display text-lg sm:text-xl text-[#ff6b00] font-bold">
+                    ${(FLEET_ITEMS.find((t) => t.id === 'tilt-20')?.rates.oneDay ?? FLEET_ITEMS.find((t) => t.id === 'tilt-20')?.dailyRate) ?? 110}
+                  </span>
                 </div>
                 <div>
                   <span className="text-[#8e8d8c] block text-[10px] uppercase font-bold tracking-wider">CAPACITY</span>
-                  <span className="font-display text-lg sm:text-xl text-white font-bold">11,000 lbs</span>
+                  <span className="font-display text-lg sm:text-xl text-white font-bold">
+                    {FLEET_ITEMS.find((t) => t.id === 'tilt-20')?.specs.capacity || '11,000 lbs'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -223,31 +231,35 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onSelectTrailer 
             <div className="relative h-44 sm:h-56 w-full bg-black/60 overflow-hidden">
               <img
                 src={(FLEET_ITEMS.find((t) => t.id === 'enclosed-8x20')?.imageUrl) || (FLEET_ITEMS[2]?.imageUrl || '')}
-                alt="8x20' Enclosed"
+                alt={FLEET_ITEMS.find((t) => t.id === 'enclosed-8x20')?.name || "8x20' Enclosed"}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 filter brightness-95"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute top-3 left-3 px-3 py-1 bg-[#ff6b00] text-black text-xs font-display uppercase tracking-wider font-bold">
-                ENCLOSED
+                {FLEET_ITEMS.find((t) => t.id === 'enclosed-8x20')?.tag || 'ENCLOSED'}
               </div>
             </div>
             <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
               <div>
                 <h3 className="font-display text-2xl sm:text-3xl text-white uppercase tracking-wide group-hover:text-[#ff6b00] transition-colors">
-                  8X20' ENCLOSED
+                  {FLEET_ITEMS.find((t) => t.id === 'enclosed-8x20')?.name || "8X20' ENCLOSED"}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#bab8b7] leading-relaxed mt-2">
-                  Secure, weather-tight cargo transport with heavy-duty ramp door and E-track tie-down system.
+                  {FLEET_ITEMS.find((t) => t.id === 'enclosed-8x20')?.description || "8x20' enclosed cargo trailer."}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
                 <div>
                   <span className="text-[#8e8d8c] block text-[10px] uppercase font-bold tracking-wider">DAILY RATE</span>
-                  <span className="font-display text-lg sm:text-xl text-[#ff6b00] font-bold">$100</span>
+                  <span className="font-display text-lg sm:text-xl text-[#ff6b00] font-bold">
+                    ${(FLEET_ITEMS.find((t) => t.id === 'enclosed-8x20')?.rates.oneDay ?? FLEET_ITEMS.find((t) => t.id === 'enclosed-8x20')?.dailyRate) ?? 100}
+                  </span>
                 </div>
                 <div>
                   <span className="text-[#8e8d8c] block text-[10px] uppercase font-bold tracking-wider">CAPACITY</span>
-                  <span className="font-display text-lg sm:text-xl text-white font-bold">7,000 lbs</span>
+                  <span className="font-display text-lg sm:text-xl text-white font-bold">
+                    {FLEET_ITEMS.find((t) => t.id === 'enclosed-8x20')?.specs.capacity || '7,000 lbs'}
+                  </span>
                 </div>
               </div>
             </div>
