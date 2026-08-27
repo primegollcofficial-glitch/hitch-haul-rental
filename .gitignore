@@ -8,5 +8,6 @@ coverage/
 !.env.example
 
 # Runtime data (customer bookings, uploaded licenses, admin config) - NEVER commit
-data/
+# Anchor to repo root so src/data (source files) is NOT ignored.
+/data/
 uploads/

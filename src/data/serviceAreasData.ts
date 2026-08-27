@@ -1,0 +1,172 @@
+import { ServiceArea } from '../types';
+
+export const SERVICE_AREAS: ServiceArea[] = [
+  {
+    id: 'forsyth',
+    name: 'Forsyth',
+    county: 'Macon County, IL',
+    zip: '62535',
+    distanceFromHub: '8 miles north',
+    deliveryTime: '15–25 mins',
+    tagline: 'North Retail Corridor & Residential Projects',
+    description: 'Fast trailer drop-off and pickup across Forsyth, IL. Serving residential remodeling, commercial retail site cleanup, landscape mulch/dirt hauling, and vehicle transport along the Route 51 corridor.',
+    popularUses: ['Commercial Contractor Hauling', 'Home Remodel Debris Dump', 'Car & Equipment Transport', 'Landscape Material Delivery'],
+    highlights: ['Fast dispatch via US-51 North', 'Same-day jobsite drop & swap', 'Contractor multi-day discounts']
+  },
+  {
+    id: 'long-creek',
+    name: 'Long Creek',
+    county: 'Macon County, IL',
+    zip: '62521',
+    distanceFromHub: '4 miles east',
+    deliveryTime: '10–15 mins',
+    tagline: 'Lake Decatur & East Macon County',
+    description: 'Direct proximity to our staging yard for immediate delivery. Perfect for Lake Decatur lakeside property renovations, storm cleanup, tree debris hauling, and farm equipment transport.',
+    popularUses: ['Storm & Tree Branch Hauling', 'Lakeside Renovation Dumpsters', 'Mini-Excavator & Tractor Transport', 'General Yard Cleanout'],
+    highlights: ['Under 15-minute dispatch', 'Hydraulic dump trailers available', 'Driveway-safe drop-off']
+  },
+  {
+    id: 'harristown',
+    name: 'Harristown',
+    county: 'Macon County, IL',
+    zip: '62537',
+    distanceFromHub: '9 miles west',
+    deliveryTime: '15–20 mins',
+    tagline: 'West Corridor & Agricultural Jobs',
+    description: 'Convenient trailer rentals for homeowners, small farms, and contractors throughout Harristown. Our heavy-duty hydraulic dumpers and flatbed car haulers handle heavy loads easily.',
+    popularUses: ['Farm Machinery Hauling', 'Roofing Tear-Off Disposal', 'Vehicle & Tractor Transport', 'Gravel & Rock Delivery'],
+    highlights: ['Direct access via US-36 West', 'Heavy 14,000 lb GVWR trailers', 'Easy online & phone reservations']
+  },
+  {
+    id: 'oreana',
+    name: 'Oreana',
+    county: 'Macon County, IL',
+    zip: '62554',
+    distanceFromHub: '10 miles northeast',
+    deliveryTime: '15–25 mins',
+    tagline: 'Northeast Route 72 & Rural Cleanouts',
+    description: 'Reliable equipment and dump trailer rentals delivered right to your job site or property in Oreana, IL. Excellent for rural property maintenance and shop projects.',
+    popularUses: ['Barn & Outbuilding Cleanout', 'Bobcat & Skid Steer Moving', 'Building Material Logistics', 'Driveway Grading Spreading'],
+    highlights: ['Quick I-72 corridor access', 'Spreader gate dump trailers', 'Clean, road-ready equipment']
+  },
+  {
+    id: 'elwin',
+    name: 'Elwin',
+    county: 'Macon County, IL',
+    zip: '62521',
+    distanceFromHub: '3 miles south',
+    deliveryTime: '5–10 mins',
+    tagline: 'South Decatur & US-51 Corridor',
+    description: 'Virtually adjacent to our yard base in Mount Zion / South Decatur. Get fastest response times and rapid same-day drop-off anywhere in Elwin.',
+    popularUses: ['Emergency Debris Cleanup', 'Weekend DIY Landscaping', 'Auto Transport & Hauling', 'Demolition Scrap Removal'],
+    highlights: ['Fastest 10-minute dispatch', 'Zero-hassle yard pickup option', 'Competitive local rates']
+  },
+  {
+    id: 'boody',
+    name: 'Boody',
+    county: 'Macon County, IL',
+    zip: '62514',
+    distanceFromHub: '8 miles southwest',
+    deliveryTime: '15–20 mins',
+    tagline: 'Southwest Route 48 Corridor',
+    description: 'Heavy duty trailer rentals serving Boody, IL. We deliver hydraulic dump trailers for residential debris, roofers, concrete removal, and farm machinery transport.',
+    popularUses: ['Concrete & Brick Scrap Hauling', 'Farm Repair Equipment Moving', 'Household Junk Removal', 'Fencing & Lumber Delivery'],
+    highlights: ['Hydraulic power up / power down', 'Heavy duty tie-down D-rings', 'Flexible rental schedules']
+  },
+  {
+    id: 'macon',
+    name: 'Macon',
+    county: 'Macon County, IL',
+    zip: '62544',
+    distanceFromHub: '9 miles south',
+    deliveryTime: '15–20 mins',
+    tagline: 'South County Agricultural Hub',
+    description: 'Serving the City of Macon and south rural agricultural properties. Whether you need a car hauler for project vehicles or a 14-yard dump trailer for roofing jobs, we have you covered.',
+    popularUses: ['Agricultural Implement Transport', 'Residential Roof Tear-Offs', 'Large Estate Cleanouts', 'Dirt & Aggregate Hauling'],
+    highlights: ['Straight shot down US-51 South', 'Electric brakes & DOT compliant', 'Commercial contractor support']
+  },
+  {
+    id: 'warrensburg',
+    name: 'Warrensburg',
+    county: 'Macon County, IL',
+    zip: '62573',
+    distanceFromHub: '12 miles northwest',
+    deliveryTime: '20–25 mins',
+    tagline: 'Northwest Route 121 District',
+    description: 'Full trailer rental service for Warrensburg residents and businesses. Perfect for moving vintage cars, transporting construction gear, or tackling weekend demolition.',
+    popularUses: ['Classic Car & Truck Hauling', 'Home Addition Demolition', 'Agricultural Equipment Rental', 'Weekend Waste Cleanup'],
+    highlights: ['Delivery to your driveway/farm', 'Slide-out loading ramps included', 'Winch-ready trailer options']
+  },
+  {
+    id: 'argenta',
+    name: 'Argenta',
+    county: 'Macon County, IL',
+    zip: '62501',
+    distanceFromHub: '14 miles northeast',
+    deliveryTime: '20–30 mins',
+    tagline: 'Northeast I-72 & Route 48 Junction',
+    description: 'High quality dump and equipment trailers dispatched to Argenta, IL. Save money over traditional dumpster services by using our convenient drop-off and pickup.',
+    popularUses: ['Dumpster Alternative Cleanouts', 'Tractor & Mower Transport', 'Shed Demolition Waste', 'Contractor Work Site Support'],
+    highlights: ['Cost-effective dumpster alternative', 'High sidewalls for maximum capacity', '24/7 drop-off coordination']
+  },
+  {
+    id: 'maroa',
+    name: 'Maroa',
+    county: 'Macon County, IL',
+    zip: '62556',
+    distanceFromHub: '18 miles north',
+    deliveryTime: '25–30 mins',
+    tagline: 'North Macon County Corridor',
+    description: 'Trailer rental solutions dispatched to Maroa and surrounding northern Macon County farmsteads. Professional grade equipment with all necessary straps and safety chains.',
+    popularUses: ['Long Distance Equipment Hauling', 'Farm Debris & Scrap Disposal', 'Vehicle Relocation', 'Commercial Building Material'],
+    highlights: ['Heavy capacity tandem axles', 'DOT inspected & insured fleet', 'Multi-day & weekly specials']
+  },
+  {
+    id: 'blue-mound',
+    name: 'Blue Mound',
+    county: 'Macon County, IL',
+    zip: '62513',
+    distanceFromHub: '14 miles southwest',
+    deliveryTime: '20–25 mins',
+    tagline: 'Southwest Agricultural & Residential',
+    description: 'Dependable trailer rentals delivered across Blue Mound, IL. Heavy-duty trailers with heavy load capacities ready for demanding agricultural, residential, or commercial hauls.',
+    popularUses: ['Rural Yard Clearing', 'Farm Implement Relocation', 'Remodeling Waste Hauling', 'Vehicle Breakdown Recovery'],
+    highlights: ['Direct job site delivery', 'Easy hydraulic operation', 'Full hookup safety orientation']
+  },
+  {
+    id: 'niantic',
+    name: 'Niantic',
+    county: 'Macon County, IL',
+    zip: '62551',
+    distanceFromHub: '15 miles west',
+    deliveryTime: '20–25 mins',
+    tagline: 'West County Line & US-36 Junction',
+    description: 'Full trailer drop-off and rental services serving Niantic, IL. We provide commercial grade hydraulic dump trailers, car haulers, and utility trailers to your location.',
+    popularUses: ['Residential Cleanups', 'Vehicle & Machinery Haul-off', 'Roofing & Siding Jobs', 'Bulk Mulch / Topsoil Hauling'],
+    highlights: ['Prompt scheduled drop-offs', 'Easy return protocols', 'Direct phone dispatcher support']
+  },
+  {
+    id: 'mount-zion',
+    name: 'Mount Zion',
+    county: 'Macon County, IL',
+    zip: '62549',
+    distanceFromHub: 'Primary Staging Yard',
+    deliveryTime: 'Immediate / 5 mins',
+    tagline: 'Headquarters & Primary Staging Yard',
+    description: 'Our primary equipment yard is located right in Mount Zion. Fast local pickup, instant reservations, and immediate local deliveries across all subdivisions and surrounding areas.',
+    popularUses: ['Fast Self-Pickup & Hookup', 'Driveway-Safe Remodel Dumps', 'Local Vehicle & Equipment Towing', 'Weekend Landscape Projects'],
+    highlights: ['Yard headquarters pickup', 'Zero delivery charge available', 'Fastest turn-around']
+  },
+  {
+    id: 'decatur',
+    name: 'Decatur',
+    county: 'Macon County, IL',
+    zip: '62521 / 62522 / 62526',
+    distanceFromHub: 'Metro Core (0–5 miles)',
+    deliveryTime: '10–15 mins',
+    tagline: 'Metro Decatur & Central Commercial Hub',
+    description: 'Full coverage across all Decatur neighborhoods, commercial districts, industrial zones, and residential corridors. Same-day trailer delivery and swap services available 7 days a week.',
+    popularUses: ['Contractor Job Site Trailers', 'Industrial & Commercial Hauling', 'Residential Property Cleanouts', 'Car & Flatbed Towing'],
+    highlights: ['Comprehensive Decatur coverage', 'Daily & weekly rental tiers', 'Contractor billing available']
+  }
+];
