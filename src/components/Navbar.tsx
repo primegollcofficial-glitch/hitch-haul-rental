@@ -334,6 +334,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
               <Phone className="w-4 h-4 text-[#ff6b00]" />
               <span>(217) 853-7475 • Direct Dispatch</span>
             </a>
+            <button
+              onClick={() => handleNavClick('admin')}
+              className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold border transition-colors ${
+                activeTab === 'admin'
+                  ? 'bg-[#ff6b00] text-black font-bold shadow'
+                  : 'bg-[#111111] text-white border border-white/10 hover:border-[#ff6b00]'
+              }`}
+            >
+              <ShieldCheck className="w-4 h-4 text-[#ff6b00]" />
+              <span>Admin Panel</span>
+            </button>
             <div className="flex items-center justify-center gap-2 text-xs text-[#8e8d8c] py-1">
               <MapPin className="w-3.5 h-3.5 text-[#ff6b00]" />
               <span>Mount Zion & Decatur, IL Service Yard</span>
