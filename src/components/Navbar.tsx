@@ -25,7 +25,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
     { tab: 'faq', label: 'FAQ & Specs' },
     { tab: 'areas', label: 'Areas', hasDropdown: true },
     { tab: 'contact', label: 'Contact' },
-    { tab: 'admin', label: 'Admin' },
   ];
 
   // Close dropdown on outside click
@@ -62,7 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
     <header className="sticky top-0 z-50 w-full bg-black border-b border-white/10 shadow-2xl">
       {/* Main Navigation Bar */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-6 h-16 sm:h-20">
+        <div className="flex items-center gap-6 min-h-16 sm:min-h-20 py-2.5 sm:py-3">
           {/* Brand Logo & Name */}
           <button
             onClick={() => handleNavClick('home')}
@@ -88,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
           </button>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center justify-center gap-1 xl:gap-2 flex-1 min-w-0" ref={dropdownRef}>
+          <nav className="hidden lg:flex items-center justify-center flex-wrap gap-x-0.5 gap-y-1 xl:gap-x-1.5 flex-1 min-w-0" ref={dropdownRef}>
             {navLinks.map((link) => {
               const isActive = activeTab === link.tab;
 
@@ -102,7 +101,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
                   >
                     <button
                       onClick={() => handleNavClick('areas')}
-                      className={`px-3.5 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 relative cursor-pointer flex items-center gap-1.5 ${
+                      className={`px-2.5 xl:px-3 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 relative cursor-pointer flex items-center gap-1.5 ${
                         isActive
                           ? 'text-white bg-white/10 shadow-sm'
                           : 'text-[#c8c6c5] hover:text-white hover:bg-white/5'
@@ -173,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
                 <button
                   key={link.tab}
                   onClick={() => handleNavClick(link.tab)}
-                  className={`px-3.5 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 relative cursor-pointer ${
+                  className={`px-2.5 xl:px-3 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 relative cursor-pointer ${
                     isActive
                       ? 'text-white bg-white/10 shadow-sm'
                       : 'text-[#c8c6c5] hover:text-white hover:bg-white/5'
@@ -189,7 +188,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
           </nav>
 
           {/* Desktop Right Actions (lg+) */}
-          <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
+          <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
             <a
               href="tel:12178537475"
               className="hidden xl:inline-flex items-center gap-2 px-3.5 py-2.5 rounded-lg border border-white/15 bg-[#111111] hover:bg-[#1a1a1a] hover:border-white/30 text-white text-xs font-bold tracking-wider transition-all shadow-sm"
@@ -197,6 +196,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
               <Phone className="w-3.5 h-3.5 text-[#ff6b00]" />
               <span className="whitespace-nowrap">(217) 853-7475</span>
             </a>
+            <button
+              onClick={() => handleNavClick('admin')}
+              className={`px-3 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'admin'
+                  ? 'text-white bg-white/10 shadow-sm'
+                  : 'text-[#c8c6c5] hover:text-white hover:bg-white/5'
+              }`}
+              title="Admin login"
+            >
+              <ShieldCheck className="w-4 h-4 text-[#ff6b00]" />
+              <span>Admin</span>
+            </button>
             <button
               onClick={() => handleNavClick('booking')}
               className="btn-primary text-sm uppercase px-5 py-2.5 shadow-md shadow-orange-500/20 group cursor-pointer"
