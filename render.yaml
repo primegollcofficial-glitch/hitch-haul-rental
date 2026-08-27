@@ -21,3 +21,9 @@ services:
         value: 20.19.0
       - key: JWT_SECRET
         generateValue: true
+      # Temporary demo preview credentials (changes here require a redeploy).
+      # Admin login on the deployed site: /admin with this password.
+      - key: ADMIN_PASSWORD
+        value: client123
+      - key: ADMIN_EMAIL
+        value: owner@example.com

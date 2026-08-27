@@ -38,6 +38,20 @@ app.use(express.json({ limit: '2mb' }));
 ensureDataDir();
 seedFleet(SEED_FLEET);
 
+// ---- Auto-configure admin from env (optional) ----
+// If ADMIN_PASSWORD is provided and no admin password exists yet, set it.
+// Useful for first deploy on Render so the /admin login works immediately.
+{
+  const db = getDB();
+  const envPass = process.env.ADMIN_PASSWORD;
+  if (!db.settings.adminPasswordHash && envPass && String(envPass).length >= 4) {
+    db.settings.adminPasswordHash = bcrypt.hashSync(String(envPass), 10);
+    if (process.env.ADMIN_EMAIL) db.settings.adminEmail = process.env.ADMIN_EMAIL;
+    saveDB();
+    console.log('Admin password auto-configured from ADMIN_PASSWORD env.');
+  }
+}
+
 // ---- Uploads ----
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
