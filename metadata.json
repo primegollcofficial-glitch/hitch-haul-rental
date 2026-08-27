@@ -1,0 +1,6 @@
+{
+  "name": "Hitch & Haul Trailer Rental LLC",
+  "description": "Heavy-duty trailer and equipment rentals in Decatur and Mount Zion, IL by Hitch & Haul Trailer Rental LLC.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

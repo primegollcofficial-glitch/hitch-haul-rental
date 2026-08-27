@@ -1,0 +1,12 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Runtime data (customer bookings, uploaded licenses, admin config) - NEVER commit
+data/
+uploads/

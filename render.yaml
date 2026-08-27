@@ -1,0 +1,23 @@
+# Render Blueprint for Hitch & Haul Trailer Rental
+# Deploy from the Render Dashboard -> New -> Blueprint (select this repo),
+# or via the Render CLI.
+#
+# NOTE: This project uses a local JSON file (data/db.json) and disk uploads
+# (uploads/). On Render's free/standard web services the filesystem is NOT
+# persistent across redeploys, so uploaded files & new bookings may reset on
+# redeploy. For a preview that's fine. To make data+uploads durable later,
+# attach a Persistent Disk and set DATA_DIR and UPLOAD_DIR to its mount path.
+
+services:
+  - type: web
+    name: hitch-haul-preview
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.19.0
+      - key: JWT_SECRET
+        generateValue: true
