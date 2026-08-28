@@ -12,11 +12,13 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [areasDropdownOpen, setAreasDropdownOpen] = useState(false);
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const [mobileAreasExpanded, setMobileAreasExpanded] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const logoUrl = logoImg;
 
+  // Full list used by the mobile drawer
   const navLinks: { tab: NavTab; label: string; hasDropdown?: boolean }[] = [
     { tab: 'home', label: 'Home' },
     { tab: 'fleet', label: 'Trailer Fleet' },
@@ -27,11 +29,26 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
     { tab: 'contact', label: 'Contact' },
   ];
 
+  // Desktop: keep the most-used links visible, the rest tucked under "More" so the bar stays clean
+  const desktopPrimary: { tab: NavTab; label: string }[] = [
+    { tab: 'home', label: 'Home' },
+    { tab: 'fleet', label: 'Trailer Fleet' },
+    { tab: 'about', label: 'About Us' },
+    { tab: 'areas', label: 'Areas' },
+    { tab: 'contact', label: 'Contact' },
+  ];
+  const desktopMore: { tab: NavTab; label: string }[] = [
+    { tab: 'testimonials', label: 'Testimonials' },
+    { tab: 'faq', label: 'FAQ & Specs' },
+    { tab: 'admin', label: 'Admin Panel' },
+  ];
+
   // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setAreasDropdownOpen(false);
+        setMoreDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -42,6 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
     onNavigate(tab);
     setMobileMenuOpen(false);
     setAreasDropdownOpen(false);
+    setMoreDropdownOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -87,8 +105,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
           </button>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center justify-center flex-wrap gap-x-0.5 gap-y-1 xl:gap-x-1.5 flex-1 min-w-0" ref={dropdownRef}>
-            {navLinks.map((link) => {
+          <nav className="hidden lg:flex items-center justify-center gap-1 xl:gap-1.5 flex-1 min-w-0" ref={dropdownRef}>
+            {desktopPrimary.map((link) => {
               const isActive = activeTab === link.tab;
 
               if (link.tab === 'areas') {
@@ -101,7 +119,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
                   >
                     <button
                       onClick={() => handleNavClick('areas')}
-                      className={`px-2.5 xl:px-3 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 relative cursor-pointer flex items-center gap-1.5 ${
+                      className={`px-3 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 relative cursor-pointer flex items-center gap-1.5 ${
                         isActive
                           ? 'text-white bg-white/10 shadow-sm'
                           : 'text-[#c8c6c5] hover:text-white hover:bg-white/5'
@@ -116,7 +134,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
                       )}
                     </button>
 
-                    {/* Areas Mega/Dropdown Menu */}
+                    {/* Areas Mega/Menu */}
                     {areasDropdownOpen && (
                       <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[460px] max-w-[90vw] p-4 bg-[#0a0a0a] border border-white/15 rounded-2xl shadow-2xl z-50 animate-in fade-in-50 zoom-in-95 duration-150">
                         <div className="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3">
@@ -172,7 +190,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
                 <button
                   key={link.tab}
                   onClick={() => handleNavClick(link.tab)}
-                  className={`px-2.5 xl:px-3 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 relative cursor-pointer ${
+                  className={`px-3 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 relative cursor-pointer ${
                     isActive
                       ? 'text-white bg-white/10 shadow-sm'
                       : 'text-[#c8c6c5] hover:text-white hover:bg-white/5'
@@ -185,6 +203,44 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
                 </button>
               );
             })}
+
+            {/* More dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setMoreDropdownOpen(true)}
+              onMouseLeave={() => setMoreDropdownOpen(false)}
+            >
+              <button
+                onClick={() => setMoreDropdownOpen((v) => !v)}
+                className="px-3 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 relative cursor-pointer flex items-center gap-1.5 text-[#c8c6c5] hover:text-white hover:bg-white/5"
+                aria-expanded={moreDropdownOpen}
+                aria-haspopup="true"
+              >
+                <span>More</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${moreDropdownOpen ? 'rotate-180 text-[#ff6b00]' : 'text-[#8e8d8c]'}`} />
+              </button>
+              {moreDropdownOpen && (
+                <div className="absolute top-full right-0 mt-1 w-52 p-1.5 bg-[#0a0a0a] border border-white/15 rounded-xl shadow-2xl z-50 animate-in fade-in-50 zoom-in-95 duration-150">
+                  {desktopMore.map((link) => {
+                    const isActive = activeTab === link.tab;
+                    return (
+                      <button
+                        key={link.tab}
+                        onClick={() => handleNavClick(link.tab)}
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold tracking-wide text-left transition-colors cursor-pointer ${
+                          isActive
+                            ? 'bg-[#ff6b00] text-black'
+                            : 'text-[#c8c6c5] hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        <span>{link.label}</span>
+                        <ArrowRight className={`w-3.5 h-3.5 ${isActive ? 'text-black' : 'text-white/30'}`} />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </nav>
 
           {/* Desktop Right Actions (lg+) */}
@@ -196,18 +252,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
               <Phone className="w-3.5 h-3.5 text-[#ff6b00]" />
               <span className="whitespace-nowrap">(217) 853-7475</span>
             </a>
-            <button
-              onClick={() => handleNavClick('admin')}
-              className={`px-3 py-2 rounded-lg text-sm font-semibold tracking-wide whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
-                activeTab === 'admin'
-                  ? 'text-white bg-white/10 shadow-sm'
-                  : 'text-[#c8c6c5] hover:text-white hover:bg-white/5'
-              }`}
-              title="Admin login"
-            >
-              <ShieldCheck className="w-4 h-4 text-[#ff6b00]" />
-              <span>Admin</span>
-            </button>
             <button
               onClick={() => handleNavClick('booking')}
               className="btn-primary text-sm uppercase px-5 py-2.5 shadow-md shadow-orange-500/20 group cursor-pointer"

@@ -33,7 +33,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onNavigate }) => {
             </h1>
 
             <p className="text-base sm:text-lg text-[#bab8b7] leading-relaxed">
-              Hitch & Haul Trailer Rental LLC was founded with a singular mission: providing contractor-grade, ultra-dependable hauling equipment to Decatur, Mount Zion, and surrounding Central Illinois communities without the typical rental yard headaches.
+              At Hitch & Haul Trailer Rental LLC, we provide reliable, heavy-duty hauling solutions across Decatur, Mount Zion, and Central Illinois. Whether you are transporting a vehicle, moving equipment to a job site, or tackling a big DIY project, our well-maintained rental fleet and local delivery options ensure you get the job done safely and efficiently. Founded on honest service, straightforward pricing, and a commitment to our community, we make the rental process seamless from pickup to drop-off. When you have a heavy load to move, trust Hitch & Haul to give you the leverage you need to get rolling.
             </p>
 
             <div className="p-5 rounded-lg bg-[#1a1c1c] border-l-4 border-[#ff6b00] border-y border-r border-white/10 space-y-2">
