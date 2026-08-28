@@ -19,12 +19,14 @@ import {
   EyeOff,
   Package,
   ListOrdered,
+  CalendarDays,
 } from 'lucide-react';
 import { TrailerItem, Booking } from '../types';
 import * as api from '../api';
 import { useData } from '../DataContext';
+import { RentalCalendar } from './RentalCalendar';
 
-type AdminTab = 'fleet' | 'bookings' | 'settings';
+type AdminTab = 'fleet' | 'bookings' | 'calendar' | 'settings';
 
 const STATUSES: TrailerItem['status'][] = ['available', 'in-use', 'maintenance'];
 const CATEGORIES = ['dump', 'flatbed', 'enclosed', 'utility'];
@@ -80,6 +82,7 @@ function AdminTabs() {
   const tabs: { id: AdminTab; label: string; icon: any }[] = [
     { id: 'fleet', label: 'Fleet / Products', icon: Truck },
     { id: 'bookings', label: 'Bookings', icon: ListOrdered },
+    { id: 'calendar', label: 'Calendar', icon: CalendarDays },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
   return (
@@ -105,6 +108,7 @@ function AdminTabs() {
 
       {tab === 'fleet' && <FleetManager refreshKey={refreshKey} onChanged={() => setRefreshKey((k) => k + 1)} />}
       {tab === 'bookings' && <BookingsManager onChanged={() => setRefreshKey((k) => k + 1)} />}
+      {tab === 'calendar' && <RentalCalendar />}
       {tab === 'settings' && <SettingsPanel />}
     </div>
   );
