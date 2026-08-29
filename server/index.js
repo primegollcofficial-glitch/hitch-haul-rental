@@ -343,6 +343,8 @@ function normalizeBooking(b) {
     email: b.email || '',
     notes: b.notes || '',
     licenseFiles: Array.isArray(b.licenseFiles) ? b.licenseFiles : [],
+    insuranceFiles: Array.isArray(b.insuranceFiles) ? b.insuranceFiles : [],
+    trailerVideoFiles: Array.isArray(b.trailerVideoFiles) ? b.trailerVideoFiles : [],
     estimatedTotal: Number(b.estimatedTotal) || 0,
     status: b.status || 'pending',
     checkedInAt: b.checkedInAt || '',
@@ -492,6 +494,8 @@ async function sendBookingNotification(booking, publics) {
 
   const addons = (booking.addons || []).map((a) => a.name || a).join(', ') || 'None';
   const files = (booking.licenseFiles || []).map((f) => f.url || f).join(', ') || 'None';
+  const insuranceFiles = (booking.insuranceFiles || []).map((f) => f.url || f).join(', ') || 'None';
+  const trailerVideoFiles = (booking.trailerVideoFiles || []).map((f) => f.url || f).join(', ') || 'None';
 
   const html = `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #ddd;border-radius:8px;overflow:hidden">
@@ -513,6 +517,8 @@ async function sendBookingNotification(booking, publics) {
         <tr><td><b>Add-ons</b></td><td>${addons}</td></tr>
         <tr><td><b>Notes</b></td><td>${booking.notes || '—'}</td></tr>
         <tr><td><b>License Files</b></td><td>${files}</td></tr>
+        <tr><td><b>Insurance Files</b></td><td>${insuranceFiles}</td></tr>
+        <tr><td><b>Trailer Video</b></td><td>${trailerVideoFiles}</td></tr>
         <tr><td><b>Est. Total</b></td><td>$${booking.estimatedTotal}</td></tr>
       </table>
       <p style="font-size:12px;color:#888;margin-top:20px">Sent automatically from the Hitch &amp; Haul booking system.</p>

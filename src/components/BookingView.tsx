@@ -52,6 +52,8 @@ export const BookingView: React.FC<BookingViewProps> = ({
   const [email, setEmail] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [licenseFiles, setLicenseFiles] = useState<{ url: string; filename: string; size: number }[]>([]);
+  const [insuranceFiles, setInsuranceFiles] = useState<{ url: string; filename: string; size: number }[]>([]);
+  const [trailerVideoFiles, setTrailerVideoFiles] = useState<{ url: string; filename: string; size: number }[]>([]);
   const [uploading, setUploading] = useState(false);
 
   // Availability
@@ -128,18 +130,22 @@ export const BookingView: React.FC<BookingViewProps> = ({
     setSelectedAddons((prev) => (prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]));
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (target: 'license' | 'insurance' | 'trailer', e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setUploading(true);
     setError('');
     try {
       const r = await api.uploadBookingFiles(Array.from(files));
-      setLicenseFiles((prev) => [...prev, ...r.files.map((f) => ({ url: f.url, filename: f.filename, size: f.size }))]);
+      const urls = r.files.map((f) => ({ url: f.url, filename: f.filename, size: f.size }));
+      if (target === 'insurance') setInsuranceFiles((prev) => [...prev, ...urls]);
+      else if (target === 'trailer') setTrailerVideoFiles((prev) => [...prev, ...urls]);
+      else setLicenseFiles((prev) => [...prev, ...urls]);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -150,7 +156,9 @@ export const BookingView: React.FC<BookingViewProps> = ({
     if (!settings.bookingEnabled) return setError('Online booking is currently disabled. Please call us.');
     if (currentTrailer.bookingEnabled === false) return setError('Booking is currently disabled for this trailer.');
     if (!fullName || !phone || !email) return setError('Please fill out Full Name, Phone, and Email.');
-    if (licenseFiles.length === 0) return setError('Please upload a picture/video of your driver\'s license.');
+    if (licenseFiles.length === 0) return setError('A valid driver\'s license upload is required before your booking can proceed.');
+    if (insuranceFiles.length === 0) return setError('Please upload your insurance document (photo or video).');
+    if (trailerVideoFiles.length === 0) return setError('Please upload a video of the trailer at receiving/delivery.');
     if (fulfillment === 'delivery' && !deliveryAddress) return setError('Please enter a delivery address.');
 
     setSubmitting(true);
@@ -174,6 +182,8 @@ export const BookingView: React.FC<BookingViewProps> = ({
         email,
         notes,
         licenseFiles,
+        insuranceFiles,
+        trailerVideoFiles,
         estimatedTotal: calculateTotal(),
       });
       setSubmittedBooking({
@@ -413,7 +423,7 @@ export const BookingView: React.FC<BookingViewProps> = ({
             <div className="space-y-4">
               <div className="flex items-center gap-2 border-b border-white/10 pb-2">
                 <span className="h-6 w-6 rounded-full bg-[#ff6b00] text-black font-display flex items-center justify-center text-sm font-bold">3</span>
-                <h3 className="font-display text-xl sm:text-2xl text-white uppercase">OPERATOR & LICENSE</h3>
+                <h3 className="font-display text-xl sm:text-2xl text-white uppercase">OPERATOR &amp; REQUIRED DOCUMENTS</h3>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -432,25 +442,39 @@ export const BookingView: React.FC<BookingViewProps> = ({
                 <input type="email" placeholder="contractor@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-[#121414] border border-white/20 text-white rounded-lg p-3 text-sm focus:border-[#ff6b00] focus:outline-none" required />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[#bab8b7] uppercase tracking-wider mb-1.5">Driver's License Upload (Picture & Video) *</label>
-                <label className={`flex items-center gap-2 p-4 rounded-lg border-2 border-dashed border-white/20 text-sm text-[#8e8d8c] cursor-pointer hover:border-[#ff6b00] transition-colors ${uploading ? 'opacity-60 pointer-events-none' : ''}`}>
-                  <Upload className="w-5 h-5" />
-                  {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                  {uploading ? 'Uploading...' : 'Upload license picture and/or short verification video (you can select both together)'}
-                  <input type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleFileUpload} />
-                </label>
-                {licenseFiles.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {licenseFiles.map((f, i) => (
-                      <div key={i} className="flex items-center gap-2 bg-[#121414] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
-                        <FileCheck className="w-4 h-4 text-emerald-400" />
-                        <span className="max-w-[160px] truncate">{f.filename}</span>
-                        <button onClick={() => setLicenseFiles((prev) => prev.filter((_, idx) => idx !== i))} className="text-[#8e8d8c] hover:text-white cursor-pointer"><X className="w-3.5 h-3.5" /></button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <div className="space-y-4">
+                {([
+                  ['license', 'Driver\'s License *', 'Upload a clear picture of your driver\'s license (photo, not expired).'],
+                  ['insurance', 'Proof of Insurance *', 'Upload your auto / coverage insurance document or card (photo or video).'],
+                  ['trailer', 'Trailer Video at Receiving/Delivery *', 'Upload a short video of the trailer at the time of receiving / delivery.'],
+                ] as const).map(([key, label, hint], idx) => {
+                  const value = key === 'license' ? licenseFiles : key === 'insurance' ? insuranceFiles : trailerVideoFiles;
+                  const setter = key === 'license' ? setLicenseFiles : key === 'insurance' ? setInsuranceFiles : setTrailerVideoFiles;
+                  const missing = value.length === 0;
+                  return (
+                    <div key={key}>
+                      <label className="block text-xs font-bold text-[#bab8b7] uppercase tracking-wider mb-1.5">{label} <span className="text-red-400">*</span>{missing && <span className="ml-1 text-[#ff6b00] lowercase normal-case font-semibold">(required)</span>}</label>
+                      <div className={`text-[11px] text-[#8e8d8c] mb-1.5 -mt-1`}>{hint}</div>
+                      <label className={`flex items-center gap-2 p-4 rounded-lg border-2 border-dashed text-sm cursor-pointer transition-colors ${missing ? 'border-[#8e8d8c]/50 text-[#bab8b7] hover:border-[#ff6b00]' : 'border-emerald-500/50 text-emerald-400 hover:border-[#ff6b00]'} ${uploading ? 'opacity-60 pointer-events-none' : ''}`}>
+                        <Upload className="w-5 h-5" />
+                        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : missing ? null : <CheckCircle className="w-4 h-4 text-emerald-400" />}
+                        {uploading ? 'Uploading...' : (missing ? 'Click to upload (picture and/or video)' : `${value.length} file${value.length === 1 ? '' : 's'} uploaded — add more?`)}
+                        <input type="file" accept="image/*,video/*" multiple className="hidden" onChange={(e) => handleFileUpload(key, e)} />
+                      </label>
+                      {value.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {value.map((f, i) => (
+                            <div key={i} className="flex items-center gap-2 bg-[#121414] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white">
+                              <FileCheck className="w-4 h-4 text-emerald-400" />
+                              <span className="max-w-[160px] truncate">{f.filename}</span>
+                              <button onClick={() => setter((prev) => prev.filter((_, idx) => idx !== i))} className="text-[#8e8d8c] hover:text-white cursor-pointer"><X className="w-3.5 h-3.5" /></button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
               <div>

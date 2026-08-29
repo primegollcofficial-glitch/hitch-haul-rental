@@ -608,6 +608,16 @@ function BookingsManager({ onChanged }: { onChanged: () => void }) {
                   {b.licenseFiles.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noreferrer" className="text-[#ff6b00] underline ml-1">#{i + 1}</a>)}
                 </div>
               )}
+              {b.insuranceFiles && b.insuranceFiles.length > 0 && (
+                <div className="text-xs text-[#bab8b7]"><span className="text-[#8e8d8c]">Insurance files:</span>{' '}
+                  {b.insuranceFiles.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noreferrer" className="text-[#ff6b00] underline ml-1">#{i + 1}</a>)}
+                </div>
+              )}
+              {b.trailerVideoFiles && b.trailerVideoFiles.length > 0 && (
+                <div className="text-xs text-[#bab8b7]"><span className="text-[#8e8d8c]">Trailer video (receiving):</span>{' '}
+                  {b.trailerVideoFiles.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noreferrer" className="text-[#ff6b00] underline ml-1">#{i + 1}</a>)}
+                </div>
+              )}
 
               {b.returnFiles && b.returnFiles.length > 0 && (
                 <div className="text-xs text-[#bab8b7]"><span className="text-[#8e8d8c]">Return video/resources:</span>{' '}

@@ -73,6 +73,8 @@ export interface Booking {
   email: string;
   notes: string;
   licenseFiles: { url: string; filename: string; size: number; mimetype?: string }[];
+  insuranceFiles: { url: string; filename: string; size: number; mimetype?: string }[];
+  trailerVideoFiles: { url: string; filename: string; size: number; mimetype?: string }[];
   estimatedTotal: number;
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
   checkedInAt?: string;
@@ -98,6 +100,8 @@ export interface BookingSubmission {
   email: string;
   notes: string;
   licenseFiles: { url: string; filename: string; size: number }[];
+  insuranceFiles: { url: string; filename: string; size: number }[];
+  trailerVideoFiles: { url: string; filename: string; size: number }[];
   estimatedTotal: number;
 }
 
