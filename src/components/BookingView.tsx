@@ -53,7 +53,6 @@ export const BookingView: React.FC<BookingViewProps> = ({
   const [notes, setNotes] = useState<string>('');
   const [licenseFiles, setLicenseFiles] = useState<{ url: string; filename: string; size: number }[]>([]);
   const [insuranceFiles, setInsuranceFiles] = useState<{ url: string; filename: string; size: number }[]>([]);
-  const [trailerVideoFiles, setTrailerVideoFiles] = useState<{ url: string; filename: string; size: number }[]>([]);
   const [uploading, setUploading] = useState(false);
 
   // Availability
@@ -130,7 +129,7 @@ export const BookingView: React.FC<BookingViewProps> = ({
     setSelectedAddons((prev) => (prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]));
   };
 
-  const handleFileUpload = async (target: 'license' | 'insurance' | 'trailer', e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (target: 'license' | 'insurance', e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setUploading(true);
@@ -139,7 +138,6 @@ export const BookingView: React.FC<BookingViewProps> = ({
       const r = await api.uploadBookingFiles(Array.from(files));
       const urls = r.files.map((f) => ({ url: f.url, filename: f.filename, size: f.size }));
       if (target === 'insurance') setInsuranceFiles((prev) => [...prev, ...urls]);
-      else if (target === 'trailer') setTrailerVideoFiles((prev) => [...prev, ...urls]);
       else setLicenseFiles((prev) => [...prev, ...urls]);
     } catch (err: any) {
       setError(err.message);
@@ -158,7 +156,6 @@ export const BookingView: React.FC<BookingViewProps> = ({
     if (!fullName || !phone || !email) return setError('Please fill out Full Name, Phone, and Email.');
     if (licenseFiles.length === 0) return setError('A valid driver\'s license upload is required before your booking can proceed.');
     if (insuranceFiles.length === 0) return setError('Please upload your insurance document (photo or video).');
-    if (trailerVideoFiles.length === 0) return setError('Please upload a video of the trailer at receiving/delivery.');
     if (fulfillment === 'delivery' && !deliveryAddress) return setError('Please enter a delivery address.');
 
     setSubmitting(true);
@@ -183,7 +180,6 @@ export const BookingView: React.FC<BookingViewProps> = ({
         notes,
         licenseFiles,
         insuranceFiles,
-        trailerVideoFiles,
         estimatedTotal: calculateTotal(),
       });
       setSubmittedBooking({
@@ -273,7 +269,7 @@ export const BookingView: React.FC<BookingViewProps> = ({
               </div>
               <div className="flex items-start gap-2.5">
                 <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                <div><strong className="text-white block font-semibold">Valid License & Insurance:</strong> Please upload a picture/video of your driver's license during checkout.</div>
+                <div><strong className="text-white block font-semibold">Valid License &amp; Insurance:</strong> Please upload your driver's license and insurance during checkout. Receiving &amp; delivery videos are uploaded separately on the Upload Videos page.</div>
               </div>
               <div className="flex items-start gap-2.5">
                 <CreditCard className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
@@ -446,10 +442,9 @@ export const BookingView: React.FC<BookingViewProps> = ({
                 {([
                   ['license', 'Driver\'s License *', 'Upload a clear picture of your driver\'s license (photo, not expired).'],
                   ['insurance', 'Proof of Insurance *', 'Upload your auto / coverage insurance document or card (photo or video).'],
-                  ['trailer', 'Trailer Video at Receiving/Delivery *', 'Upload a short video of the trailer at the time of receiving / delivery.'],
                 ] as const).map(([key, label, hint], idx) => {
-                  const value = key === 'license' ? licenseFiles : key === 'insurance' ? insuranceFiles : trailerVideoFiles;
-                  const setter = key === 'license' ? setLicenseFiles : key === 'insurance' ? setInsuranceFiles : setTrailerVideoFiles;
+                  const value = key === 'license' ? licenseFiles : insuranceFiles;
+                  const setter = key === 'license' ? setLicenseFiles : setInsuranceFiles;
                   const missing = value.length === 0;
                   return (
                     <div key={key}>
@@ -544,7 +539,7 @@ export const BookingView: React.FC<BookingViewProps> = ({
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <a href="tel:12178537475" className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"><Phone className="w-4 h-4 text-[#ff6b00]" /> Call Dispatch</a>
-              <button onClick={() => { setSubmittedBooking(null); onNavigate('return'); }} className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"><Upload className="w-4 h-4 text-[#ff6b00]" /> Submit Return</button>
+              <button onClick={() => { setSubmittedBooking(null); onNavigate('return'); }} className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"><Upload className="w-4 h-4 text-[#ff6b00]" /> Upload Videos</button>
               <button onClick={() => { setSubmittedBooking(null); onNavigate('fleet'); }} className="flex-1 btn-primary py-3 text-sm font-bold uppercase tracking-wider flex items-center justify-center cursor-pointer">Done</button>
             </div>
           </div>

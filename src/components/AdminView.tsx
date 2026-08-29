@@ -614,8 +614,13 @@ function BookingsManager({ onChanged }: { onChanged: () => void }) {
                 </div>
               )}
               {b.trailerVideoFiles && b.trailerVideoFiles.length > 0 && (
-                <div className="text-xs text-[#bab8b7]"><span className="text-[#8e8d8c]">Trailer video (receiving):</span>{' '}
+                <div className="text-xs text-[#bab8b7]"><span className="text-[#8e8d8c]">Receiving video:</span>{' '}
                   {b.trailerVideoFiles.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noreferrer" className="text-[#ff6b00] underline ml-1">#{i + 1}</a>)}
+                </div>
+              )}
+              {b.deliveryVideoFiles && b.deliveryVideoFiles.length > 0 && (
+                <div className="text-xs text-[#bab8b7]"><span className="text-[#8e8d8c]">Delivery video:</span>{' '}
+                  {b.deliveryVideoFiles.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noreferrer" className="text-[#ff6b00] underline ml-1">#{i + 1}</a>)}
                 </div>
               )}
 

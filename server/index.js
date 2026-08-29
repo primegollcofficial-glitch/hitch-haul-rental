@@ -295,17 +295,19 @@ app.post('/api/booking-upload', upload.array('files', 6), (req, res) => {
   res.json({ files: urls });
 });
 
-// Public return-video upload — customer looks up booking by reference and
-// uploads their checkout/return video. Attaches to the booking for admin review.
-app.post('/api/bookings/:reference/return', upload.array('files', 6), (req, res) => {
+// Public receiving/delivery video upload — customer looks up booking by
+// reference and uploads their trailer receiving video and/or delivery video.
+// Attaches to the booking for admin review. type = 'receiving' | 'delivery'
+app.post('/api/bookings/:reference/videos', upload.array('files', 6), (req, res) => {
   try {
     const cur = getDB();
     const ref = (req.params.reference || '').toString().trim().toUpperCase();
     const idx = cur.bookings.findIndex((x) => x.reference === ref);
     if (idx === -1) return res.status(404).json({ error: 'Booking not found. Check your reference.' });
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'No return files uploaded.' });
+      return res.status(400).json({ error: 'No files uploaded.' });
     }
+    const type = req.body.type === 'delivery' ? 'delivery' : 'receiving';
     const uploaded = req.files.map((f) => ({
       url: `/uploads/${f.filename}`,
       filename: f.filename,
@@ -313,13 +315,13 @@ app.post('/api/bookings/:reference/return', upload.array('files', 6), (req, res)
       mimetype: f.mimetype,
     }));
     const booking = cur.bookings[idx];
-    booking.returnFiles = Array.isArray(booking.returnFiles) ? booking.returnFiles.concat(uploaded) : uploaded;
-    booking.returnVideoAt = booking.returnVideoAt || new Date().toISOString();
+    const field = type === 'delivery' ? 'deliveryVideoFiles' : 'trailerVideoFiles';
+    booking[field] = Array.isArray(booking[field]) ? booking[field].concat(uploaded) : uploaded;
     saveDB();
-    res.json({ ok: true, returnFiles: booking.returnFiles, returnVideoAt: booking.returnVideoAt });
+    res.json({ ok: true, type, files: booking[field] });
   } catch (e) {
-    console.error('Return upload failed:', e.message);
-    res.status(500).json({ error: 'Return upload failed.' });
+    console.error('Video upload failed:', e.message);
+    res.status(500).json({ error: 'Video upload failed.' });
   }
 });
 
@@ -345,6 +347,7 @@ function normalizeBooking(b) {
     licenseFiles: Array.isArray(b.licenseFiles) ? b.licenseFiles : [],
     insuranceFiles: Array.isArray(b.insuranceFiles) ? b.insuranceFiles : [],
     trailerVideoFiles: Array.isArray(b.trailerVideoFiles) ? b.trailerVideoFiles : [],
+    deliveryVideoFiles: Array.isArray(b.deliveryVideoFiles) ? b.deliveryVideoFiles : [],
     estimatedTotal: Number(b.estimatedTotal) || 0,
     status: b.status || 'pending',
     checkedInAt: b.checkedInAt || '',
@@ -405,7 +408,7 @@ app.put('/api/bookings/:id', requireAuth, (req, res) => {
   const idx = cur.bookings.findIndex((x) => x.id === req.params.id || x.reference === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Not found' });
   const body = req.body || {};
-  const allowed = ['status', 'notes', 'fullName', 'phone', 'email', 'pickupDate', 'pickupTime', 'returnDate', 'returnTime', 'checkedInAt', 'checkedOutAt', 'returnFiles', 'returnVideoAt'];
+  const allowed = ['status', 'notes', 'fullName', 'phone', 'email', 'pickupDate', 'pickupTime', 'returnDate', 'returnTime', 'checkedInAt', 'checkedOutAt', 'returnFiles', 'returnVideoAt', 'trailerVideoFiles', 'deliveryVideoFiles'];
   allowed.forEach((k) => {
     if (body[k] !== undefined) cur.bookings[idx][k] = body[k];
   });

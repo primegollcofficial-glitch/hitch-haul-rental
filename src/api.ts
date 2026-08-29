@@ -115,10 +115,11 @@ export const checkInBooking = (id: string) =>
 export const checkOutBooking = (id: string) =>
   updateBooking(id, { checkedOutAt: new Date().toISOString() });
 
-export function submitReturnFiles(reference: string, files: File[]) {
+export function uploadVideos(reference: string, type: 'receiving' | 'delivery', files: File[]) {
   const fd = new FormData();
+  fd.append('type', type);
   files.forEach((f) => fd.append('files', f));
-  return request<any>(`/bookings/${encodeURIComponent(reference)}/return`, { method: 'POST', body: fd });
+  return request<any>(`/bookings/${encodeURIComponent(reference)}/videos`, { method: 'POST', body: fd });
 }
 export function deleteBooking(id: string) {
   return request<{ ok: boolean }>(`/bookings/${id}`, { method: 'DELETE' });

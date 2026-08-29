@@ -121,7 +121,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenSpecs, onOpenT
                   onClick={() => handleLink('return')}
                   className="hover:text-[#ff6b00] transition-colors cursor-pointer text-left font-medium"
                 >
-                  Return / Checkout
+                  Upload Videos
                 </button>
               </li>
               <li className="pt-1">
