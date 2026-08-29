@@ -116,6 +116,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenSpecs, onOpenT
                   Contact
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => handleLink('return')}
+                  className="hover:text-[#ff6b00] transition-colors cursor-pointer text-left font-medium"
+                >
+                  Return / Checkout
+                </button>
+              </li>
               <li className="pt-1">
                 <button
                   onClick={() => handleLink('booking')}

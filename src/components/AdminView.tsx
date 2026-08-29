@@ -19,7 +19,6 @@ import {
   EyeOff,
   Package,
   ListOrdered,
-  CalendarDays,
 } from 'lucide-react';
 import { TrailerItem, Booking } from '../types';
 import * as api from '../api';
@@ -536,6 +535,22 @@ function BookingsManager({ onChanged }: { onChanged: () => void }) {
     try { await api.deleteBooking(b.id); load(); } catch (e) { alert((e as Error).message); }
   };
 
+  const checkIn = async (b: Booking) => {
+    if (!confirm(`Confirm check-in for ${b.fullName} (${b.reference})?`)) return;
+    try { await api.checkInBooking(b.id); load(); } catch (e) { alert((e as Error).message); }
+  };
+
+  const checkOut = async (b: Booking) => {
+    if (!confirm(`Confirm check-out / return for ${b.fullName} (${b.reference})?`)) return;
+    try { await api.checkOutBooking(b.id); load(); } catch (e) { alert((e as Error).message); }
+  };
+
+  const fmt = (iso?: string) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  };
+
   const filtered = filter === 'all' ? bookings : bookings.filter((b) => b.status === filter);
   const badge: Record<string, string> = {
     pending: 'bg-amber-500/20 text-amber-400',
@@ -593,6 +608,31 @@ function BookingsManager({ onChanged }: { onChanged: () => void }) {
                   {b.licenseFiles.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noreferrer" className="text-[#ff6b00] underline ml-1">#{i + 1}</a>)}
                 </div>
               )}
+
+              {b.returnFiles && b.returnFiles.length > 0 && (
+                <div className="text-xs text-[#bab8b7]"><span className="text-[#8e8d8c]">Return video/resources:</span>{' '}
+                  {b.returnFiles.map((f, i) => <a key={i} href={f.url} target="_blank" rel="noreferrer" className="text-[#ff6b00] underline ml-1">#{i + 1}</a>)}
+                </div>
+              )}
+
+              {/* Check In / Check Out */}
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10">
+                <span className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase ${b.checkedInAt ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-[#8e8d8c]'}`}>
+                  {b.checkedInAt ? `Checked In ${fmt(b.checkedInAt)}` : 'Not checked in'}
+                </span>
+                <span className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase ${b.checkedOutAt ? 'bg-blue-500/20 text-blue-400' : 'bg-white/10 text-[#8e8d8c]'}`}>
+                  {b.checkedOutAt ? `Checked Out ${fmt(b.checkedOutAt)}` : 'Not checked out'}
+                </span>
+                {!b.checkedInAt ? (
+                  <button onClick={() => checkIn(b)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold uppercase cursor-pointer hover:bg-emerald-500/30">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Check In
+                  </button>
+                ) : !b.checkedOutAt ? (
+                  <button onClick={() => checkOut(b)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/20 border border-blue-500/40 text-blue-400 text-xs font-bold uppercase cursor-pointer hover:bg-blue-500/30">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Check Out
+                  </button>
+                ) : null}
+              </div>
             </div>
           ))}
         </div>

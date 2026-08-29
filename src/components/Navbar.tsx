@@ -27,6 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
     { tab: 'faq', label: 'FAQ & Specs' },
     { tab: 'areas', label: 'Areas', hasDropdown: true },
     { tab: 'contact', label: 'Contact' },
+    { tab: 'return', label: 'Return / Checkout' },
   ];
 
   // Desktop: keep the most-used links visible, the rest tucked under "More" so the bar stays clean
@@ -40,6 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onNavigate }) => {
   const desktopMore: { tab: NavTab; label: string }[] = [
     { tab: 'testimonials', label: 'Testimonials' },
     { tab: 'faq', label: 'FAQ & Specs' },
+    { tab: 'return', label: 'Return / Checkout' },
     { tab: 'admin', label: 'Admin Panel' },
   ];
 

@@ -295,6 +295,34 @@ app.post('/api/booking-upload', upload.array('files', 6), (req, res) => {
   res.json({ files: urls });
 });
 
+// Public return-video upload — customer looks up booking by reference and
+// uploads their checkout/return video. Attaches to the booking for admin review.
+app.post('/api/bookings/:reference/return', upload.array('files', 6), (req, res) => {
+  try {
+    const cur = getDB();
+    const ref = (req.params.reference || '').toString().trim().toUpperCase();
+    const idx = cur.bookings.findIndex((x) => x.reference === ref);
+    if (idx === -1) return res.status(404).json({ error: 'Booking not found. Check your reference.' });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No return files uploaded.' });
+    }
+    const uploaded = req.files.map((f) => ({
+      url: `/uploads/${f.filename}`,
+      filename: f.filename,
+      size: f.size,
+      mimetype: f.mimetype,
+    }));
+    const booking = cur.bookings[idx];
+    booking.returnFiles = Array.isArray(booking.returnFiles) ? booking.returnFiles.concat(uploaded) : uploaded;
+    booking.returnVideoAt = booking.returnVideoAt || new Date().toISOString();
+    saveDB();
+    res.json({ ok: true, returnFiles: booking.returnFiles, returnVideoAt: booking.returnVideoAt });
+  } catch (e) {
+    console.error('Return upload failed:', e.message);
+    res.status(500).json({ error: 'Return upload failed.' });
+  }
+});
+
 // ---- Bookings ----
 function normalizeBooking(b) {
   return {
@@ -317,6 +345,10 @@ function normalizeBooking(b) {
     licenseFiles: Array.isArray(b.licenseFiles) ? b.licenseFiles : [],
     estimatedTotal: Number(b.estimatedTotal) || 0,
     status: b.status || 'pending',
+    checkedInAt: b.checkedInAt || '',
+    checkedOutAt: b.checkedOutAt || '',
+    returnFiles: Array.isArray(b.returnFiles) ? b.returnFiles : [],
+    returnVideoAt: b.returnVideoAt || '',
     createdAt: b.createdAt || new Date().toISOString(),
   };
 }
@@ -371,7 +403,7 @@ app.put('/api/bookings/:id', requireAuth, (req, res) => {
   const idx = cur.bookings.findIndex((x) => x.id === req.params.id || x.reference === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Not found' });
   const body = req.body || {};
-  const allowed = ['status', 'notes', 'fullName', 'phone', 'email', 'pickupDate', 'pickupTime', 'returnDate', 'returnTime'];
+  const allowed = ['status', 'notes', 'fullName', 'phone', 'email', 'pickupDate', 'pickupTime', 'returnDate', 'returnTime', 'checkedInAt', 'checkedOutAt', 'returnFiles', 'returnVideoAt'];
   allowed.forEach((k) => {
     if (body[k] !== undefined) cur.bookings[idx][k] = body[k];
   });

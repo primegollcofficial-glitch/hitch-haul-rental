@@ -110,6 +110,16 @@ export function createBooking(payload: BookingSubmission) {
 export function updateBooking(id: string, payload: any) {
   return request<Booking>(`/bookings/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
 }
+export const checkInBooking = (id: string) =>
+  updateBooking(id, { checkedInAt: new Date().toISOString() });
+export const checkOutBooking = (id: string) =>
+  updateBooking(id, { checkedOutAt: new Date().toISOString() });
+
+export function submitReturnFiles(reference: string, files: File[]) {
+  const fd = new FormData();
+  files.forEach((f) => fd.append('files', f));
+  return request<any>(`/bookings/${encodeURIComponent(reference)}/return`, { method: 'POST', body: fd });
+}
 export function deleteBooking(id: string) {
   return request<{ ok: boolean }>(`/bookings/${id}`, { method: 'DELETE' });
 }

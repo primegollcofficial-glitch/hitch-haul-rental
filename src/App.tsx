@@ -6,6 +6,7 @@ import { Footer } from './components/Footer';
 import { HomeView } from './components/HomeView';
 import { FleetView } from './components/FleetView';
 import { BookingView } from './components/BookingView';
+import { ReturnVideoView } from './components/ReturnVideoView';
 import { AboutView } from './components/AboutView';
 import { TestimonialsView } from './components/TestimonialsView';
 import { AreasView } from './components/AreasView';
@@ -63,6 +64,10 @@ export const App: React.FC = () => {
               onNavigate={handleNavigate}
               onSelectTrailer={handleSelectTrailer}
             />
+          )}
+
+          {activeTab === 'return' && (
+            <ReturnVideoView onNavigate={handleNavigate} />
           )}
 
           {activeTab === 'about' && (

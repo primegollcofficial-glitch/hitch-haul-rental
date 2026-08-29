@@ -1,4 +1,4 @@
-export type NavTab = 'home' | 'fleet' | 'rates' | 'areas' | 'booking' | 'about' | 'testimonials' | 'faq' | 'contact' | 'admin';
+export type NavTab = 'home' | 'fleet' | 'rates' | 'areas' | 'booking' | 'return' | 'about' | 'testimonials' | 'faq' | 'contact' | 'admin';
 
 export interface ServiceArea {
   id: string;
@@ -75,6 +75,10 @@ export interface Booking {
   licenseFiles: { url: string; filename: string; size: number; mimetype?: string }[];
   estimatedTotal: number;
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  checkedInAt?: string;
+  checkedOutAt?: string;
+  returnFiles?: { url: string; filename: string; size?: number; mimetype?: string }[];
+  returnVideoAt?: string;
   createdAt: string;
 }
 

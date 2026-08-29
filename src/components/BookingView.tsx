@@ -520,6 +520,7 @@ export const BookingView: React.FC<BookingViewProps> = ({
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <a href="tel:12178537475" className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"><Phone className="w-4 h-4 text-[#ff6b00]" /> Call Dispatch</a>
+              <button onClick={() => { setSubmittedBooking(null); onNavigate('return'); }} className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"><Upload className="w-4 h-4 text-[#ff6b00]" /> Submit Return</button>
               <button onClick={() => { setSubmittedBooking(null); onNavigate('fleet'); }} className="flex-1 btn-primary py-3 text-sm font-bold uppercase tracking-wider flex items-center justify-center cursor-pointer">Done</button>
             </div>
           </div>
