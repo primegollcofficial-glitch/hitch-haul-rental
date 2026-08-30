@@ -393,11 +393,16 @@ app.post('/api/bookings', async (req, res) => {
   cur.bookings.push(booking);
   saveDB();
 
-  // Send email notification (non-blocking)
+  // Send email notifications (non-blocking)
   try {
     await sendBookingNotification(booking, publicSettings());
   } catch (e) {
     console.error('Email notification failed:', e.message);
+  }
+  try {
+    await sendCustomerConfirmation(booking, publicSettings());
+  } catch (e) {
+    console.error('Customer confirmation email failed:', e.message);
   }
 
   res.status(201).json(booking);
@@ -532,6 +537,55 @@ async function sendBookingNotification(booking, publics) {
     from: emailCfg.user,
     to: emailCfg.notifyTo,
     subject: `New Booking ${booking.reference} - ${booking.trailerName} (${booking.fullName})`,
+    html,
+  });
+}
+
+// ---- Send customer confirmation email ----
+async function sendCustomerConfirmation(booking, publics) {
+  const cur = getDB();
+  const emailCfg = cur.settings.email || {};
+  if (!emailCfg.user || !emailCfg.pass) {
+    console.warn('Email not configured; skipping customer confirmation.');
+    return;
+  }
+  const transporter = nodemailer.createTransport({
+    host: emailCfg.host,
+    port: Number(emailCfg.port) || 587,
+    secure: !!emailCfg.secure,
+    auth: { user: emailCfg.user, pass: emailCfg.pass },
+  });
+
+  const addons = (booking.addons || []).map((a) => a.name || a).join(', ') || 'None';
+
+  const html = `
+  <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #ddd;border-radius:8px;overflow:hidden">
+    <div style="background:#ff6b00;color:#000;padding:16px 24px">
+      <h2 style="margin:0">Booking Confirmation</h2>
+      <div style="opacity:.8">${publics.businessName}</div>
+    </div>
+    <div style="padding:24px">
+      <p>Hi ${booking.fullName},</p>
+      <p>Thanks for your trailer rental request! Here are your booking details. Our dispatch team will contact you shortly to confirm pickup time and gate code.</p>
+      <h3 style="margin-top:0">Reference: ${booking.reference}</h3>
+      <table cellpadding="6" style="width:100%;border-collapse:collapse">
+        <tr><td><b>Trailer</b></td><td>${booking.trailerName}</td></tr>
+        <tr><td><b>Pickup</b></td><td>${booking.pickupDate} ${booking.pickupTime || ''}</td></tr>
+        <tr><td><b>Return</b></td><td>${booking.returnDate} ${booking.returnTime || ''}</td></tr>
+        <tr><td><b>Days</b></td><td>${booking.days}</td></tr>
+        <tr><td><b>Fulfillment</b></td><td>${booking.fulfillment === 'delivery' ? 'Delivery to: ' + booking.deliveryAddress : 'Yard Pickup'}</td></tr>
+        <tr><td><b>Add-ons</b></td><td>${addons}</td></tr>
+        <tr><td><b>Notes</b></td><td>${booking.notes || '—'}</td></tr>
+        <tr><td><b>Est. Total</b></td><td>$${booking.estimatedTotal}</td></tr>
+      </table>
+      <p style="font-size:12px;color:#888;margin-top:20px">Questions? Call us at (217) 853-7475.</p>
+    </div>
+  </div>`;
+
+  await transporter.sendMail({
+    from: emailCfg.user,
+    to: booking.email,
+    subject: `Your Hitch & Haul Booking ${booking.reference} - ${booking.trailerName}`,
     html,
   });
 }
