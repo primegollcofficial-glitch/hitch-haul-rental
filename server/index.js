@@ -486,19 +486,37 @@ app.get('/api/availability/:trailerId', (req, res) => {
 });
 
 // ---- Email ----
+// SMTP config comes from environment variables (set on the server, not in the repo
+// or admin UI). If SMTP_PASS is not set, email sending is skipped.
+const EMAIL_CONFIG = {
+  host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: process.env.SMTP_SECURE === 'true',
+  user: process.env.SMTP_USER || '',
+  pass: process.env.SMTP_PASS || '',
+  notifyTo: process.env.SMTP_NOTIFY_TO || '',
+};
+
+function emailConfigured() {
+  return !!(EMAIL_CONFIG.user && EMAIL_CONFIG.pass && EMAIL_CONFIG.notifyTo);
+}
+
+function emailTransporter() {
+  return nodemailer.createTransport({
+    host: EMAIL_CONFIG.host,
+    port: EMAIL_CONFIG.port,
+    secure: EMAIL_CONFIG.secure,
+    auth: { user: EMAIL_CONFIG.user, pass: EMAIL_CONFIG.pass },
+  });
+}
+
+// ---- Send booking notification (owner alert) ----
 async function sendBookingNotification(booking, publics) {
-  const cur = getDB();
-  const emailCfg = cur.settings.email || {};
-  if (!emailCfg.user || !emailCfg.pass || !emailCfg.notifyTo) {
-    console.warn('Email not configured; skipping notification.');
+  if (!emailConfigured()) {
+    console.warn('SMTP not configured; skipping booking notification.');
     return;
   }
-  const transporter = nodemailer.createTransport({
-    host: emailCfg.host,
-    port: Number(emailCfg.port) || 587,
-    secure: !!emailCfg.secure,
-    auth: { user: emailCfg.user, pass: emailCfg.pass },
-  });
+  const transporter = emailTransporter();
 
   const addons = (booking.addons || []).map((a) => a.name || a).join(', ') || 'None';
   const files = (booking.licenseFiles || []).map((f) => f.url || f).join(', ') || 'None';
@@ -534,8 +552,8 @@ async function sendBookingNotification(booking, publics) {
   </div>`;
 
   await transporter.sendMail({
-    from: emailCfg.user,
-    to: emailCfg.notifyTo,
+    from: EMAIL_CONFIG.user,
+    to: EMAIL_CONFIG.notifyTo,
     subject: `New Booking ${booking.reference} - ${booking.trailerName} (${booking.fullName})`,
     html,
   });
@@ -543,18 +561,11 @@ async function sendBookingNotification(booking, publics) {
 
 // ---- Send customer confirmation email ----
 async function sendCustomerConfirmation(booking, publics) {
-  const cur = getDB();
-  const emailCfg = cur.settings.email || {};
-  if (!emailCfg.user || !emailCfg.pass) {
-    console.warn('Email not configured; skipping customer confirmation.');
+  if (!emailConfigured()) {
+    console.warn('SMTP not configured; skipping customer confirmation.');
     return;
   }
-  const transporter = nodemailer.createTransport({
-    host: emailCfg.host,
-    port: Number(emailCfg.port) || 587,
-    secure: !!emailCfg.secure,
-    auth: { user: emailCfg.user, pass: emailCfg.pass },
-  });
+  const transporter = emailTransporter();
 
   const addons = (booking.addons || []).map((a) => a.name || a).join(', ') || 'None';
 
@@ -583,7 +594,7 @@ async function sendCustomerConfirmation(booking, publics) {
   </div>`;
 
   await transporter.sendMail({
-    from: emailCfg.user,
+    from: EMAIL_CONFIG.user,
     to: booking.email,
     subject: `Your Hitch & Haul Booking ${booking.reference} - ${booking.trailerName}`,
     html,
@@ -593,20 +604,13 @@ async function sendCustomerConfirmation(booking, publics) {
 // ---- Send test email ----
 app.post('/api/email/test', requireAuth, async (req, res) => {
   try {
-    const cur = getDB();
-    const emailCfg = cur.settings.email || {};
-    if (!emailCfg.user || !emailCfg.pass || !emailCfg.notifyTo) {
+    if (!emailConfigured()) {
       return res.status(400).json({ error: 'Email not configured.' });
     }
-    const transporter = nodemailer.createTransport({
-      host: emailCfg.host,
-      port: Number(emailCfg.port) || 587,
-      secure: !!emailCfg.secure,
-      auth: { user: emailCfg.user, pass: emailCfg.pass },
-    });
+    const transporter = emailTransporter();
     await transporter.sendMail({
-      from: emailCfg.user,
-      to: emailCfg.notifyTo,
+      from: EMAIL_CONFIG.user,
+      to: EMAIL_CONFIG.notifyTo,
       subject: 'Hitch & Haul - Test Notification',
       text: 'Your email settings work! New booking alerts will be delivered to this address.',
     });
