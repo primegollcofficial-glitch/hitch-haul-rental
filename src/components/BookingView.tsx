@@ -82,10 +82,12 @@ export const BookingView: React.FC<BookingViewProps> = ({
     return toDateStr(d);
   }, [pickupDate, days]);
 
-  // Pre-filled mailto link that opens the customer's own email app addressed
-  // to the owner, so the customer can send booking details on their own.
-  const ownerMailtoHref = useMemo(() => {
-    if (!submittedBooking) return '#';
+  // Pre-filled email details (mailto + Gmail + copy) addressed to the owner,
+  // so the customer can send booking details on their own.
+  const ownerEmailLinks = useMemo(() => {
+    if (!submittedBooking) {
+      return { mailto: '#', gmail: '#', subject: '', body: '' };
+    }
     const addonNames = selectedAddons
       .map((id) => {
         const a = addons.find((x) => x.id === id);
@@ -110,8 +112,26 @@ export const BookingView: React.FC<BookingViewProps> = ({
       `Estimated Total: $${submittedBooking.total}`,
     ];
     const subject = `Hitch & Haul Booking ${submittedBooking.reference} - ${fullName}`;
-    return `mailto:owner@hitch-haultrailerrental.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+    const body = lines.join('\n');
+    return {
+      mailto: `mailto:owner@hitch-haultrailerrental.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+      gmail: `https://mail.google.com/mail/?view=cm&fs=1&to=owner@hitch-haultrailerrental.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+      subject,
+      body,
+    };
   }, [submittedBooking, fullName, phone, email, pickupDate, pickupTime, returnDate, returnTime, days, fulfillment, deliveryAddress, addons, selectedAddons, notes, licenseFiles, insuranceFiles]);
+
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const copyBookingDetails = async () => {
+    try {
+      const text = `To: owner@hitch-haultrailerrental.com\nSubject: ${ownerEmailLinks.subject}\n\n${ownerEmailLinks.body}`;
+      await navigator.clipboard.writeText(text);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    } catch {
+      setError('Unable to copy. Please use the Gmail button.');
+    }
+  };
 
   const daysFromDates = useCallback((start: string, end: string) => {
     if (!start || !end) return 1;
@@ -568,9 +588,17 @@ export const BookingView: React.FC<BookingViewProps> = ({
               <div className="flex justify-between border-b border-white/10 pb-1.5"><span className="text-[#8e8d8c]">Dates:</span><span className="text-white font-semibold">{pickupDate} {pickupTime} to {returnDate} {returnTime} ({days} days)</span></div>
               <div className="flex justify-between"><span className="text-[#8e8d8c]">Estimated Total:</span><span className="font-display text-base text-white">${submittedBooking.total}</span></div>
             </div>
-            <a href={ownerMailtoHref} className="w-full py-3.5 rounded-lg btn-primary text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+            <a href={ownerEmailLinks.gmail} target="_blank" rel="noopener noreferrer" className="w-full py-3.5 rounded-lg btn-primary text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2">
               <Send className="w-4 h-4" /> Email Booking Details to Us
             </a>
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              <a href={ownerEmailLinks.mailto} className="py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors">
+                <Send className="w-4 h-4 text-[#ff6b00]" /> Default Email App
+              </a>
+              <button onClick={copyBookingDetails} className="py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer">
+                <Send className="w-4 h-4 text-[#ff6b00]" /> {copiedEmail ? 'Copied!' : 'Copy Details'}
+              </button>
+            </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <a href="tel:12178537475" className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"><Phone className="w-4 h-4 text-[#ff6b00]" /> Call Dispatch</a>
               <button onClick={() => { setSubmittedBooking(null); onNavigate('return'); }} className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"><Upload className="w-4 h-4 text-[#ff6b00]" /> Upload Videos</button>
