@@ -5,7 +5,6 @@ import path from 'path';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
@@ -487,41 +486,44 @@ app.get('/api/availability/:trailerId', (req, res) => {
   res.json({ blockedDates: blocked });
 });
 
-// ---- Email ----
-// SMTP config comes from environment variables (set on the server, not in the repo
-// or admin UI). If SMTP_PASS is not set, email sending is skipped.
+// ---- Email (Brevo REST API — SMTP blocked on Render free tier) ----
 const EMAIL_CONFIG = {
-  host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: process.env.SMTP_SECURE === 'true',
-  user: process.env.SMTP_USER || '',
-  pass: process.env.SMTP_PASS || '',
+  apiKey: process.env.BREVO_API_KEY || '',
+  senderEmail: process.env.BREVO_SENDER_EMAIL || 'noreply@hitch-haultrailerrental.com',
+  senderName: process.env.BREVO_SENDER_NAME || 'Hitch & Haul',
   notifyTo: process.env.SMTP_NOTIFY_TO || '',
 };
 
 function emailConfigured() {
-  return !!(EMAIL_CONFIG.user && EMAIL_CONFIG.pass && EMAIL_CONFIG.notifyTo);
+  return !!(EMAIL_CONFIG.apiKey && EMAIL_CONFIG.notifyTo);
 }
 
-function emailTransporter() {
-  return nodemailer.createTransport({
-    host: EMAIL_CONFIG.host,
-    port: EMAIL_CONFIG.port,
-    secure: EMAIL_CONFIG.secure,
-    auth: { user: EMAIL_CONFIG.user, pass: EMAIL_CONFIG.pass },
-    connectionTimeout: 10000,
-    greetingTimeout: 5000,
-    socketTimeout: 10000,
+async function sendBrevoEmail(to, subject, html, toName) {
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'api-key': EMAIL_CONFIG.apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      sender: { email: EMAIL_CONFIG.senderEmail, name: EMAIL_CONFIG.senderName },
+      to: [{ email: to, name: toName || '' }],
+      subject,
+      htmlContent: html,
+    }),
   });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Brevo API ${res.status}: ${err}`);
+  }
 }
 
 // ---- Send booking notification (owner alert) ----
 async function sendBookingNotification(booking, publics) {
   if (!emailConfigured()) {
-    console.warn('SMTP not configured; skipping booking notification.');
+    console.warn('Email not configured; skipping booking notification.');
     return;
   }
-  const transporter = emailTransporter();
 
   const addons = (booking.addons || []).map((a) => a.name || a).join(', ') || 'None';
   const files = (booking.licenseFiles || []).map((f) => f.url || f).join(', ') || 'None';
@@ -556,21 +558,19 @@ async function sendBookingNotification(booking, publics) {
     </div>
   </div>`;
 
-  await transporter.sendMail({
-    from: EMAIL_CONFIG.user,
-    to: EMAIL_CONFIG.notifyTo,
-    subject: `New Booking ${booking.reference} - ${booking.trailerName} (${booking.fullName})`,
-    html,
-  });
+  await sendBrevoEmail(
+    EMAIL_CONFIG.notifyTo,
+    `New Booking ${booking.reference} - ${booking.trailerName} (${booking.fullName})`,
+    html
+  );
 }
 
 // ---- Send customer confirmation email ----
 async function sendCustomerConfirmation(booking, publics) {
   if (!emailConfigured()) {
-    console.warn('SMTP not configured; skipping customer confirmation.');
+    console.warn('Email not configured; skipping customer confirmation.');
     return;
   }
-  const transporter = emailTransporter();
 
   const addons = (booking.addons || []).map((a) => a.name || a).join(', ') || 'None';
 
@@ -598,12 +598,12 @@ async function sendCustomerConfirmation(booking, publics) {
     </div>
   </div>`;
 
-  await transporter.sendMail({
-    from: EMAIL_CONFIG.user,
-    to: booking.email,
-    subject: `Your Hitch & Haul Booking ${booking.reference} - ${booking.trailerName}`,
+  await sendBrevoEmail(
+    booking.email,
+    `Your Hitch & Haul Booking ${booking.reference} - ${booking.trailerName}`,
     html,
-  });
+    booking.fullName
+  );
 }
 
 // ---- Send test email ----
@@ -612,13 +612,11 @@ app.post('/api/email/test', requireAuth, async (req, res) => {
     if (!emailConfigured()) {
       return res.status(400).json({ error: 'Email not configured.' });
     }
-    const transporter = emailTransporter();
-    await transporter.sendMail({
-      from: EMAIL_CONFIG.user,
-      to: EMAIL_CONFIG.notifyTo,
-      subject: 'Hitch & Haul - Test Notification',
-      text: 'Your email settings work! New booking alerts will be delivered to this address.',
-    });
+    await sendBrevoEmail(
+      EMAIL_CONFIG.notifyTo,
+      'Hitch & Haul - Test Notification',
+      '<p>Your email settings work! New booking alerts will be delivered to this address.</p>'
+    );
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
