@@ -82,6 +82,37 @@ export const BookingView: React.FC<BookingViewProps> = ({
     return toDateStr(d);
   }, [pickupDate, days]);
 
+  // Pre-filled mailto link that opens the customer's own email app addressed
+  // to the owner, so the customer can send booking details on their own.
+  const ownerMailtoHref = useMemo(() => {
+    if (!submittedBooking) return '#';
+    const addonNames = selectedAddons
+      .map((id) => {
+        const a = addons.find((x) => x.id === id);
+        return a ? a.name : id;
+      })
+      .join(', ') || 'None';
+    const lines = [
+      'New booking request from the Hitch & Haul website.',
+      '',
+      `Reference: ${submittedBooking.reference}`,
+      `Customer: ${fullName}`,
+      `Phone: ${phone}`,
+      `Email: ${email}`,
+      `Trailer: ${submittedBooking.trailerName}`,
+      `Pickup: ${pickupDate} ${pickupTime}`,
+      `Return: ${returnDate} ${returnTime} (${days} day${days === 1 ? '' : 's'})`,
+      `Fulfillment: ${fulfillment === 'delivery' ? 'Delivery to ' + deliveryAddress : 'Yard pickup'}`,
+      `Add-ons: ${addonNames}`,
+      `Notes: ${notes || 'None'}`,
+      `License files: ${licenseFiles.map((f) => f.filename).join(', ') || 'None'}`,
+      `Insurance files: ${insuranceFiles.map((f) => f.filename).join(', ') || 'None'}`,
+      `Estimated Total: $${submittedBooking.total}`,
+    ];
+    const subject = `Hitch & Haul Booking ${submittedBooking.reference} - ${fullName}`;
+    return `mailto:owner@hitch-haultrailerrental.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+  }, [submittedBooking, fullName, phone, email, pickupDate, pickupTime, returnDate, returnTime, days, fulfillment, deliveryAddress, addons, selectedAddons, notes, licenseFiles, insuranceFiles]);
+
   const daysFromDates = useCallback((start: string, end: string) => {
     if (!start || !end) return 1;
     const s = new Date(start).getTime();
@@ -528,7 +559,7 @@ export const BookingView: React.FC<BookingViewProps> = ({
               <span className="text-xs font-bold tracking-widest text-[#ff6b00] uppercase">RESERVATION TRANSMITTED</span>
               <h3 className="font-display text-3xl sm:text-4xl text-white uppercase">HAUL CONFIRMED</h3>
               <p className="text-xs sm:text-sm text-[#bab8b7]">
-                Your booking request has been logged. The dispatch team has been notified by email and will contact you shortly to confirm pickup time and gate code.
+                Your booking request has been logged and your license &amp; insurance documents are saved. Please email the booking details to us using the button below — our dispatch team will then review and contact you shortly to confirm pickup time and gate code.
               </p>
             </div>
             <div className="p-4 rounded-xl bg-[#121414] border border-white/10 text-left space-y-2 text-xs">
@@ -537,7 +568,10 @@ export const BookingView: React.FC<BookingViewProps> = ({
               <div className="flex justify-between border-b border-white/10 pb-1.5"><span className="text-[#8e8d8c]">Dates:</span><span className="text-white font-semibold">{pickupDate} {pickupTime} to {returnDate} {returnTime} ({days} days)</span></div>
               <div className="flex justify-between"><span className="text-[#8e8d8c]">Estimated Total:</span><span className="font-display text-base text-white">${submittedBooking.total}</span></div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <a href={ownerMailtoHref} className="w-full py-3.5 rounded-lg btn-primary text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+              <Send className="w-4 h-4" /> Email Booking Details to Us
+            </a>
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <a href="tel:12178537475" className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"><Phone className="w-4 h-4 text-[#ff6b00]" /> Call Dispatch</a>
               <button onClick={() => { setSubmittedBooking(null); onNavigate('return'); }} className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"><Upload className="w-4 h-4 text-[#ff6b00]" /> Upload Videos</button>
               <button onClick={() => { setSubmittedBooking(null); onNavigate('fleet'); }} className="flex-1 btn-primary py-3 text-sm font-bold uppercase tracking-wider flex items-center justify-center cursor-pointer">Done</button>
