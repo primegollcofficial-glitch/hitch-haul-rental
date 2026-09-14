@@ -393,17 +393,19 @@ app.post('/api/bookings', async (req, res) => {
   cur.bookings.push(booking);
   saveDB();
 
-  // Send email notifications (non-blocking)
-  try {
-    await sendBookingNotification(booking, publicSettings());
-  } catch (e) {
-    console.error('Email notification failed:', e.message);
-  }
-  try {
-    await sendCustomerConfirmation(booking, publicSettings());
-  } catch (e) {
-    console.error('Customer confirmation email failed:', e.message);
-  }
+  // Send email notifications (non-blocking — response goes first)
+  setImmediate(async () => {
+    try {
+      await sendBookingNotification(booking, publicSettings());
+    } catch (e) {
+      console.error('Email notification failed:', e.message);
+    }
+    try {
+      await sendCustomerConfirmation(booking, publicSettings());
+    } catch (e) {
+      console.error('Customer confirmation email failed:', e.message);
+    }
+  });
 
   res.status(201).json(booking);
 });
@@ -507,6 +509,9 @@ function emailTransporter() {
     port: EMAIL_CONFIG.port,
     secure: EMAIL_CONFIG.secure,
     auth: { user: EMAIL_CONFIG.user, pass: EMAIL_CONFIG.pass },
+    connectionTimeout: 10000,
+    greetingTimeout: 5000,
+    socketTimeout: 10000,
   });
 }
 
