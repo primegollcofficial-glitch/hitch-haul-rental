@@ -121,6 +121,8 @@ export function uploadVideos(reference: string, type: 'receiving' | 'delivery', 
   files.forEach((f) => fd.append('files', f));
   return request<any>(`/bookings/${encodeURIComponent(reference)}/videos`, { method: 'POST', body: fd });
 }
+export const markEmailSent = (reference: string) =>
+  request<{ ok: boolean; emailSentAt: string }>(`/bookings/${encodeURIComponent(reference)}/email-sent`, { method: 'POST' });
 export function deleteBooking(id: string) {
   return request<{ ok: boolean }>(`/bookings/${id}`, { method: 'DELETE' });
 }

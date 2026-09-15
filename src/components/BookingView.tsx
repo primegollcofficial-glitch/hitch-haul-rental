@@ -326,6 +326,10 @@ export const BookingView: React.FC<BookingViewProps> = ({
                 <CreditCard className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                 <div><strong className="text-white block font-semibold">Security Hold:</strong> A refundable $250–$350 authorization hold will be placed on card at equipment handover.</div>
               </div>
+              <div className="flex items-start gap-2.5">
+                <Send className="w-4 h-4 text-[#ff6b00] flex-shrink-0 mt-0.5" />
+                <div><strong className="text-white block font-semibold">How it works:</strong> After you submit, you'll get a reference number (e.g. HH-0001). Email your booking details to us with the button shown on the confirmation screen. Then use the <span className="text-white font-semibold">Upload Videos</span> page and enter your reference number to upload your trailer receiving &amp; delivery videos.</div>
+              </div>
             </div>
           </div>
 
@@ -579,7 +583,7 @@ export const BookingView: React.FC<BookingViewProps> = ({
               <span className="text-xs font-bold tracking-widest text-[#ff6b00] uppercase">RESERVATION TRANSMITTED</span>
               <h3 className="font-display text-3xl sm:text-4xl text-white uppercase">HAUL CONFIRMED</h3>
               <p className="text-xs sm:text-sm text-[#bab8b7]">
-                Your booking request has been logged and your license &amp; insurance documents are saved. Please email the booking details to us using the button below — our dispatch team will then review and contact you shortly to confirm pickup time and gate code.
+                Your booking request has been logged and your license &amp; insurance documents are saved. Email your booking details to us using the button below so we can confirm your reservation — our dispatch team will review and contact you shortly.
               </p>
             </div>
             <div className="p-4 rounded-xl bg-[#121414] border border-white/10 text-left space-y-2 text-xs">
@@ -588,11 +592,15 @@ export const BookingView: React.FC<BookingViewProps> = ({
               <div className="flex justify-between border-b border-white/10 pb-1.5"><span className="text-[#8e8d8c]">Dates:</span><span className="text-white font-semibold">{pickupDate} {pickupTime} to {returnDate} {returnTime} ({days} days)</span></div>
               <div className="flex justify-between"><span className="text-[#8e8d8c]">Estimated Total:</span><span className="font-display text-base text-white">${submittedBooking.total}</span></div>
             </div>
-            <a href={ownerEmailLinks.gmail} target="_blank" rel="noopener noreferrer" className="w-full py-3.5 rounded-lg btn-primary text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+            <div className="p-4 rounded-lg bg-[#ff6b00]/10 border border-[#ff6b00]/40 text-left space-y-1 text-xs">
+              <div className="text-[#ff6b00] font-bold uppercase tracking-wider">Next: Upload Trailers Videos</div>
+              <p className="text-[#e2e2e2]">Use your reference <span className="font-mono font-bold text-[#ff6b00]">{submittedBooking.reference}</span> on the <span className="font-semibold">Upload Videos</span> page (in the menu) to upload your trailer receiving &amp; delivery videos after pickup and return.</p>
+            </div>
+            <a href={ownerEmailLinks.gmail} target="_blank" rel="noopener noreferrer" onClick={() => api.markEmailSent(submittedBooking.reference).catch(() => {})} className="w-full py-3.5 rounded-lg btn-primary text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2">
               <Send className="w-4 h-4" /> Email Booking Details to Us
             </a>
             <div className="grid grid-cols-2 gap-3 pt-1">
-              <a href={ownerEmailLinks.mailto} className="py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors">
+              <a href={ownerEmailLinks.mailto} onClick={() => api.markEmailSent(submittedBooking.reference).catch(() => {})} className="py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors">
                 <Send className="w-4 h-4 text-[#ff6b00]" /> Default Email App
               </a>
               <button onClick={copyBookingDetails} className="py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer">
@@ -602,7 +610,6 @@ export const BookingView: React.FC<BookingViewProps> = ({
             <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <a href="tel:12178537475" className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"><Phone className="w-4 h-4 text-[#ff6b00]" /> Call Dispatch</a>
               <button onClick={() => { setSubmittedBooking(null); onNavigate('return'); }} className="flex-1 py-3 rounded-lg bg-[#1e2020] hover:bg-[#282a2b] text-white border border-white/20 text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer"><Upload className="w-4 h-4 text-[#ff6b00]" /> Upload Videos</button>
-              <button onClick={() => { setSubmittedBooking(null); onNavigate('fleet'); }} className="flex-1 btn-primary py-3 text-sm font-bold uppercase tracking-wider flex items-center justify-center cursor-pointer">Done</button>
             </div>
           </div>
         </div>

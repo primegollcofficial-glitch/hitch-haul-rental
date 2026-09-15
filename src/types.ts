@@ -78,6 +78,7 @@ export interface Booking {
   deliveryVideoFiles: { url: string; filename: string; size: number; mimetype?: string }[];
   estimatedTotal: number;
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  emailSentAt?: string;
   checkedInAt?: string;
   checkedOutAt?: string;
   returnFiles?: { url: string; filename: string; size?: number; mimetype?: string }[];

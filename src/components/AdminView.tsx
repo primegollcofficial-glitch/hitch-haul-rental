@@ -581,6 +581,7 @@ function BookingsManager({ onChanged }: { onChanged: () => void }) {
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-[#ff6b00] font-bold text-sm">{b.reference}</span>
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badge[b.status]}`}>{b.status}</span>
+                    {b.emailSentAt && <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Email Sent</span>}
                   </div>
                   <div className="text-white font-bold mt-0.5">{b.fullName}</div>
                   <div className="text-xs text-[#8e8d8c]">{b.phone} · {b.email}</div>

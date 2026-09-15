@@ -324,6 +324,17 @@ app.post('/api/bookings/:reference/videos', upload.array('files', 6), (req, res)
   }
 });
 
+// Public marker: customer opened their email to send the booking details.
+app.post('/api/bookings/:reference/email-sent', (req, res) => {
+  const cur = getDB();
+  const ref = (req.params.reference || '').toString().trim().toUpperCase();
+  const idx = cur.bookings.findIndex((x) => x.reference === ref);
+  if (idx === -1) return res.status(404).json({ error: 'Booking not found.' });
+  cur.bookings[idx].emailSentAt = new Date().toISOString();
+  saveDB();
+  res.json({ ok: true, emailSentAt: cur.bookings[idx].emailSentAt });
+});
+
 // ---- Bookings ----
 function normalizeBooking(b) {
   return {
@@ -349,6 +360,7 @@ function normalizeBooking(b) {
     deliveryVideoFiles: Array.isArray(b.deliveryVideoFiles) ? b.deliveryVideoFiles : [],
     estimatedTotal: Number(b.estimatedTotal) || 0,
     status: b.status || 'pending',
+    emailSentAt: b.emailSentAt || '',
     checkedInAt: b.checkedInAt || '',
     checkedOutAt: b.checkedOutAt || '',
     returnFiles: Array.isArray(b.returnFiles) ? b.returnFiles : [],
